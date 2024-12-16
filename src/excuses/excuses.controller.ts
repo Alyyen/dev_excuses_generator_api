@@ -15,16 +15,19 @@ export class ExcusesController {
       message: string;
     },
   ) {
+    console.log('create', datas);
     return this.excusesService.create(datas);
   }
 
   @Get()
   findAll() {
+    console.log('find all');
     return this.excusesService.findAll();
   }
 
   @Get('/any')
   findAny(@Query('http_codes') http_codes: string) {
+    console.log('find any with http_codes', http_codes);
     const httpCodeArray = http_codes
       .split(',')
       .map((code) => parseInt(code, 10))
@@ -34,6 +37,7 @@ export class ExcusesController {
 
   @Get(':http_code')
   findByHttpCode(@Param('http_code') http_code: number) {
+    console.log('http_code', http_code);
     return this.excusesService.findByHttpCode(http_code);
   }
 }
