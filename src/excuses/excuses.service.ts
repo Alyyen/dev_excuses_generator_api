@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Excuse } from './schemas/excuse.schema';
-import { Tag } from './tag.enum';
+import { Tag } from './enums/tag.enum';
 
 @Injectable()
 export class ExcusesService {

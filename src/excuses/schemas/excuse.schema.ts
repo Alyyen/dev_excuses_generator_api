@@ -1,6 +1,6 @@
 import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
-import { Tag } from '../tag.enum';
+import { Tag } from '../enums/tag.enum';
 
 @Schema()
 export class Excuse extends Document {

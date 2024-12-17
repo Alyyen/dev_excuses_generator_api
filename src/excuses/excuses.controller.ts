@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Body, Param, Query } from '@nestjs/common';
 import { ExcusesService } from './excuses.service';
-import { Tag } from './tag.enum';
+import { Tag } from './enums/tag.enum';
 
 @Controller('excuses')
 export class ExcusesController {
@@ -15,7 +15,6 @@ export class ExcusesController {
       message: string;
     },
   ) {
-    console.log('create', datas);
     return this.excusesService.create(datas);
   }
 
