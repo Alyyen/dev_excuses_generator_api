@@ -1,8 +1,4 @@
-import {
-  BadRequestException,
-  ConflictException,
-  Injectable,
-} from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Excuse } from './schemas/excuse.schema';
@@ -19,51 +15,47 @@ export class ExcusesService {
     tag: Tag;
     message: string;
   }): Promise<Excuse> {
-    try {
-      // Check if the tag is one of the predefined tags
-      if (!Object.values(Tag).includes(datas.tag)) {
-        throw new BadRequestException(
-          'Invalid tag. Must be one of the predefined tags.',
-        );
-      }
-
-      // Check if the message is valid
-      if (!datas.message || datas.message.trim() === '') {
-        throw new BadRequestException('Message cannot be empty.');
-      }
-
-      // Check if the suggested http_code is already in the database
-      const httpCodeFound = await this.excuseModel
-        .findOne({
-          http_code: datas.http_code,
-        })
-        .exec();
-
-      if (httpCodeFound) {
-        throw new ConflictException(
-          'An excuse with this HTTP code already exists.',
-        );
-      }
-
-      // Then, check if the suggested message is already in the database
-      const messageFound = await this.excuseModel
-        .findOne({
-          message: datas.message,
-        })
-        .exec();
-
-      if (messageFound) {
-        throw new ConflictException(
-          'An excuse with this message already exists.',
-        );
-      }
-
-      // If the http_code and message are unique, create the new excuse
-      const newExcuse = new this.excuseModel(datas);
-      return await newExcuse.save();
-    } catch (error) {
-      throw new Error(error);
+    // Check if the tag is one of the predefined tags
+    if (!Object.values(Tag).includes(datas.tag)) {
+      throw new BadRequestException(
+        'Invalid tag. Must be one of the predefined tags.',
+      );
     }
+
+    // Check if the message is valid
+    if (!datas.message || datas.message.trim() === '') {
+      throw new BadRequestException('Message cannot be empty.');
+    }
+
+    // Check if the suggested http_code is already in the database
+    const httpCodeFound = await this.excuseModel
+      .findOne({
+        http_code: datas.http_code,
+      })
+      .exec();
+
+    if (httpCodeFound) {
+      throw new BadRequestException(
+        'An excuse with this HTTP code already exists.',
+      );
+    }
+
+    // Then, check if the suggested message is already in the database
+    const messageFound = await this.excuseModel
+      .findOne({
+        message: datas.message,
+      })
+      .exec();
+
+    if (messageFound) {
+      throw new BadRequestException(
+        'An excuse with this message already exists.',
+      );
+    }
+
+    // If the http_code and message are unique, create the new excuse
+    const newExcuse = new this.excuseModel(datas);
+    return await newExcuse.save();
   }
 
   async findAll() {
@@ -81,7 +73,7 @@ export class ExcusesService {
 
     // If no excuses are available after filtering, throw an error
     if (filteredExcuses.length === 0) {
-      throw new Error(
+      throw new BadRequestException(
         'No excuses available after excluding the given HTTP codes',
       );
     }
