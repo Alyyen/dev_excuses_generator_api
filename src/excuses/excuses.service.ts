@@ -1,4 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Excuse } from './schemas/excuse.schema';
@@ -16,7 +20,19 @@ export class ExcusesService {
     message: string;
   }): Promise<Excuse> {
     try {
-      // First, check if the suggested http_code is already in the database
+      // Check if the tag is one of the predefined tags
+      if (!Object.values(Tag).includes(datas.tag)) {
+        throw new BadRequestException(
+          'Invalid tag. Must be one of the predefined tags.',
+        );
+      }
+
+      // Check if the message is valid
+      if (!datas.message || datas.message.trim() === '') {
+        throw new BadRequestException('Message cannot be empty.');
+      }
+
+      // Check if the suggested http_code is already in the database
       const httpCodeFound = await this.excuseModel
         .findOne({
           http_code: datas.http_code,
@@ -24,7 +40,9 @@ export class ExcusesService {
         .exec();
 
       if (httpCodeFound) {
-        throw new Error('Excuse already exists with this http_code');
+        throw new ConflictException(
+          'An excuse with this HTTP code already exists.',
+        );
       }
 
       // Then, check if the suggested message is already in the database
@@ -35,7 +53,9 @@ export class ExcusesService {
         .exec();
 
       if (messageFound) {
-        throw new Error('Excuse already exists with this message');
+        throw new ConflictException(
+          'An excuse with this message already exists.',
+        );
       }
 
       // If the http_code and message are unique, create the new excuse
